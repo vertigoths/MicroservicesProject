@@ -1,6 +1,7 @@
 using Duende.IdentityServer;
 using FreeCourse.IdentityServer.Data;
 using FreeCourse.IdentityServer.Models;
+using FreeCourse.IdentityServer.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -11,31 +12,35 @@ internal static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
+	    builder.Services.AddLocalApiAuthentication();
+
         builder.Services.AddRazorPages();
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Services.AddDbContext<ApplicationDbContext>(options => 
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
         builder.Services
-            .AddIdentityServer(options =>
-            {
-                options.Events.RaiseErrorEvents = true;
-                options.Events.RaiseInformationEvents = true;
-                options.Events.RaiseFailureEvents = true;
-                options.Events.RaiseSuccessEvents = true;
+	        .AddIdentityServer(options =>
+	        {
+		        options.Events.RaiseErrorEvents = true;
+		        options.Events.RaiseInformationEvents = true;
+		        options.Events.RaiseFailureEvents = true;
+		        options.Events.RaiseSuccessEvents = true;
 
-                // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
-                options.EmitStaticAudienceClaim = true;
-            })
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients)
-            .AddAspNetIdentity<ApplicationUser>();
-        
+		        // see https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/
+		        options.EmitStaticAudienceClaim = true;
+	        })
+	        .AddInMemoryIdentityResources(Config.IdentityResources)
+	        .AddInMemoryApiResources(Config.ApiResources)
+	        .AddInMemoryApiScopes(Config.ApiScopes)
+	        .AddInMemoryClients(Config.Clients)
+	        .AddAspNetIdentity<ApplicationUser>()
+	        .AddResourceOwnerValidator<IdentityResourceOwnerPasswordValidator>();
+
         builder.Services.AddAuthentication()
             .AddGoogle(options =>
             {
@@ -63,11 +68,17 @@ internal static class HostingExtensions
         app.UseStaticFiles();
         app.UseRouting();
         app.UseIdentityServer();
-        app.UseAuthorization();
-        
-        app.MapRazorPages()
+        app.UseAuthentication();
+		app.UseAuthorization();
+
+		app.MapRazorPages()
             .RequireAuthorization();
 
-        return app;
+		app.UseEndpoints(endpoints =>
+		{
+			endpoints.MapDefaultControllerRoute();
+		});
+
+		return app;
     }
 }

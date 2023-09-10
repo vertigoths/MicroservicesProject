@@ -1,4 +1,8 @@
 ﻿using FreeCourse.IdentityServer;
+using FreeCourse.IdentityServer.Data;
+using FreeCourse.IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -20,17 +24,28 @@ try
         .ConfigureServices()
         .ConfigurePipeline();
 
-    // this seeding is only for the template to bootstrap the DB and users.
-    // in production you will likely want a different approach.
-    if (args.Contains("/seed"))
+    using (var serviceScope = app.Services.CreateScope())
     {
-        Log.Information("Seeding database...");
-        SeedData.EnsureSeedData(app);
-        Log.Information("Done seeding database. Exiting.");
-        return;
+	    var serviceProvider = serviceScope.ServiceProvider;
+
+	    var appDbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+        appDbContext.Database.Migrate();
+
+        var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        if (!userManager.Users.Any())
+        {
+	        userManager.CreateAsync(new ApplicationUser()
+	        {
+                UserName = "msever17",
+                Email = "msever17@gmail.com",
+                City = "Ankara",
+	        }, "Password12*").Wait();
+        }
     }
 
-    app.Run();
+	app.Run();
 }
 catch (Exception ex) when (
                             // https://github.com/dotnet/runtime/issues/60600

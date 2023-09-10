@@ -1,10 +1,17 @@
+Services.FakePayment -> 5016
 
+Services.Order -> 5015
 
+Services.Discount -> 5014
 
+Services.Basket -> 5013
 
-
-
-
-
+Services.PhotoStock -> 5012
 
 Services.Catalog -> 7070
+
+Identity Server -> 5001
+
+Gateway -> 5000
+
+Web -> 5010
