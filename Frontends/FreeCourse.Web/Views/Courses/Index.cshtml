@@ -1,0 +1,73 @@
+﻿@model List<CourseViewModel>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-body">
+				<h5 class="card-title">
+					Courses
+				</h5>
+
+				<a asp-controller="Courses" asp-action="Create" class="btn btn-primary mb-3">Create a course</a>
+
+				<table class="table table-striped table-bordered">
+					<thead>
+						<tr>
+							<th>
+								Photo
+							</th>
+							<th>
+								Course Name
+							</th>
+							<th>
+								Price
+							</th>
+							<th>
+								Duration
+							</th>
+						</tr>
+					</thead>
+
+					@if (Model != null)
+					{
+						<tbody>
+							@foreach (var course in Model)
+							{
+								<tr>
+									<td>
+									</td>
+									<td>
+										@course.Name
+									</td>
+									<td>
+										@course.Price
+									</td>
+									<td>
+										@course.Feature.Duration
+									</td>
+									<td>
+										<a asp-controller="Courses" asp-action="Update" asp-route-id="@course.Id" class="btn btn-success btn-sm">
+											Update
+										</a>
+									</td>
+									<td>
+										<a asp-controller="Courses" asp-action="Delete" asp-route-id="@course.Id" class="btn btn-danger btn-sm">
+											Delete
+										</a>
+									</td>
+								</tr>
+							}
+						</tbody>
+					}
+					else
+					{
+						<div class="alert alert-info">
+							No Courses Found!
+						</div>
+					}
+					
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

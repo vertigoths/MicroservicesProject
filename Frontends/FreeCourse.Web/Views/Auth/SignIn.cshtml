@@ -8,6 +8,10 @@
 					Üye Giriş
 				</h5>
 
+                <div class="text-danger" asp-validation-summary="ModelOnly">
+
+                </div>
+
                 <form asp-controller="Auth" asp-action="SignIn" method="post">
                     <div class="mb-3">
                         <label asp-for="Email"></label>
@@ -15,14 +19,15 @@
                         <span class="text-danger" asp-validation-for="Email"></span>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1">
+                        <label asp-for="Password">Password</label>
+                        <input type="password" asp-for="Password">
+                        <span class="text-danger" asp-validation-for="Password"></span>
                     </div>
                     <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                        <input type="checkbox" asp-for="IsRemember" class="form-check-input">
+                        <label asp-for="IsRemember" class="form-check-label"></label>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
                 </form>
 			</div>
 		</div>
