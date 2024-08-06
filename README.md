@@ -7,3 +7,5 @@
 • Gateway
 
 • Repository Pattern
+
+• Identity Server / JWT Token
